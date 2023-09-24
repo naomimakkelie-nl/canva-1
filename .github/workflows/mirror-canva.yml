@@ -23,7 +23,10 @@ jobs:
 
       - name: Download Website
         run: |
-          wget --recursive --no-clobber --page-requisites --html-extension --convert-links --restrict-file-names=windows --domains "$(echo $ORIGINAL_URL | sed -E -e 's/https?:\/\/([^/]+).*/\1/')" --no-parent "$ORIGINAL_URL"
+          wget --mirror --no-clobber --page-requisites --html-extension --convert-links --restrict-file-names=windows --domains "$(echo $ORIGINAL_URL | sed -E -e 's/https?:\/\/([^/]+).*/\1/')" --no-parent "$ORIGINAL_URL" || exit_code=$?
+          if [ -n "$exit_code" ] && [ "$exit_code" -ne 8 ]; then
+            exit $exit_code
+          fi
 
       - name: Push to gh-pages branch
         run: |
